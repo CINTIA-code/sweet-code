@@ -18,7 +18,7 @@ body {
   overflow: hidden;
 }
 
-/* Centro */
+/* Container central */
 .container {
   height: 100%;
   display: flex;
@@ -31,9 +31,9 @@ body {
   z-index: 2;
 }
 
-/* Coração botão */
+/* Botão coração */
 #heartBtn {
-  font-size: 60px;
+  font-size: 64px;
   background: none;
   border: none;
   cursor: pointer;
@@ -46,19 +46,12 @@ body {
   100% { transform: scale(1); }
 }
 
-/* Setinha */
+/* Texto “clique aqui” */
 .seta {
-  margin-top: 10px;
+  margin-top: 6px;
   font-size: 14px;
   color: #7a3a3a;
   opacity: 0.8;
-  animation: subirDescer 1.5s infinite;
-}
-
-@keyframes subirDescer {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-  100% { transform: translateY(0); }
 }
 
 /* Mensagem */
@@ -70,7 +63,7 @@ body {
   color: #4b1f1f;
 }
 
-/* Corações flutuando */
+/* Corações subindo */
 .heart {
   position: fixed;
   bottom: -20px;
@@ -93,21 +86,28 @@ body {
     opacity: 0;
   }
 }
+
+/* Player discreto (necessário para liberar áudio) */
+audio {
+  margin-top: 15px;
+  width: 260px;
+}
 </style>
 </head>
 
 <body>
 
-<!-- Música instrumental permitida -->
-<audio id="music" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8b6b5f8d3f.mp3" type="audio/mpeg">
-</audio>
-
 <div class="container">
 
-  <!-- Botão coração -->
+  <!-- Coração clicável -->
   <button id="heartBtn">💗</button>
-  <div class="seta">clique aqui</div>
+  <div class="seta">clique no coração</div>
+
+  <!-- Player de áudio (instrumental permitido) -->
+  <audio id="music" controls preload="auto" playsinline>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8b6b5f8d3f.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio.
+  </audio>
 
   <!-- Mensagem -->
   <p class="mensagem">
@@ -138,16 +138,15 @@ let started = false;
 // Clique no coração
 heartBtn.addEventListener("click", () => {
   if (!started) {
-    music.volume = 0.6;
-    music.play();
+    music.play();          // toca a música
     started = true;
-    criarCorações();
     heartBtn.textContent = "💞";
+    startHearts();         // inicia os corações
   }
 });
 
-// Criar corações subindo
-function criarCorações() {
+// Corações subindo
+function startHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
     heart.className = "heart";

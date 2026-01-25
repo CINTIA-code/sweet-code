@@ -1,42 +1,35 @@
-let player;
+const music = document.getElementById("music");
+const btn = document.getElementById("musicBtn");
+
 let playing = false;
 
-// YouTube API
-function onYouTubeIframeAPIReady() {
-  player = new YT.Player('music');
-}
-
-// Carrega API
-const tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
-
-// Botão play/pause
-const btn = document.getElementById("musicBtn");
 btn.addEventListener("click", () => {
   if (!playing) {
-    player.playVideo();
-    btn.textContent = "⏸️ Iris";
+    music.volume = 0.6;
+    music.play();
+    btn.textContent = "⏸️";
   } else {
-    player.pauseVideo();
-    btn.textContent = "▶️ Iris";
+    music.pause();
+    btn.textContent = "▶️";
   }
   playing = !playing;
 });
 
-// Corações
+// Corações subindo
 function createHeart() {
   const heart = document.createElement("div");
   heart.classList.add("heart");
   heart.textContent = "💗";
 
   heart.style.left = Math.random() * 100 + "vw";
-  heart.style.fontSize = Math.random() * 20 + 12 + "px";
-  heart.style.animationDuration = Math.random() * 3 + 5 + "s";
+  heart.style.fontSize = Math.random() * 18 + 12 + "px";
+  heart.style.animationDuration = Math.random() * 3 + 6 + "s";
 
   document.body.appendChild(heart);
 
-  setTimeout(() => heart.remove(), 8000);
+  setTimeout(() => {
+    heart.remove();
+  }, 9000);
 }
 
-setInterval(createHeart, 600);
+setInterval(createHeart, 700);

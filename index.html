@@ -2,161 +2,58 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Sweet Code 💌</title>
+<title>Sweet Code 💗</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
+  margin: 0;
   height: 100vh;
-  background: linear-gradient(180deg, #f7e9ec, #fdf6f1);
-  font-family: Georgia, serif;
+  background: #f7e9ec;
   overflow: hidden;
-}
-
-/* Container */
-.container {
-  height: 100%;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 24px;
-  position: relative;
-  z-index: 2;
+  font-family: Georgia, serif;
 }
 
-/* Coração central */
-#heartBtn {
-  font-size: 78px; /* maior, mas não exagerado */
+button {
+  font-size: 70px;
   background: none;
   border: none;
   cursor: pointer;
-  animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
-/* Texto clique */
-.seta {
-  margin-top: 8px;
-  font-size: 15px;
-  color: #7a3a3a;
-  opacity: 0.75;
-}
-
-/* Mensagem */
-.mensagem {
-  margin-top: 34px;
-  max-width: 720px;
-  font-size: 20px; /* texto maior */
-  line-height: 1.9;
-  color: #4a1f1f;
-}
-
-/* Corações subindo */
 .heart {
   position: fixed;
   bottom: -20px;
-  font-size: 18px;
-  color: #c94a6a;
-  animation: subir 9s linear forwards;
-  opacity: 0.8;
+  font-size: 20px;
+  animation: subir 6s linear forwards;
 }
 
 @keyframes subir {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(-120vh) scale(1.4);
-    opacity: 0;
-  }
-}
-
-/* Áudio escondido */
-audio {
-  display: none;
+  from { transform: translateY(0); opacity: 0; }
+  to { transform: translateY(-120vh); opacity: 1; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <!-- Coração -->
-  <button id="heartBtn">💗</button>
-  <div class="seta">clique no coração</div>
-
-  <!-- Áudio instrumental permitido -->
-  <audio id="music" preload="auto" playsinline>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8b6b5f8d3f.mp3" type="audio/mpeg">
-  </audio>
-
-  <!-- Mensagem -->
-  <p class="mensagem">
-    Torço para que você esteja bem.<br><br>
-
-    Acho que, infelizmente, não podemos ter o que tivemos outra vez,
-    mas saiba que não é por falta de querer.<br><br>
-
-    Eu sempre quero você.<br>
-    Só você.<br><br>
-
-    Infelizmente, não vou poder falar que você vai ser minha esposinha 😭<br><br>
-
-    <em>
-      Com carinho,<br>
-      Isadora 💌💐
-    </em>
-  </p>
-
-</div>
+<button id="btn">💗</button>
 
 <script>
-const music = document.getElementById("music");
-const heartBtn = document.getElementById("heartBtn");
+const btn = document.getElementById("btn");
 
-let started = false;
-
-heartBtn.addEventListener("click", async () => {
-  if (!started) {
-    try {
-      await music.play(); // garante execução após interação
-    } catch (e) {
-      console.log("Áudio bloqueado até interação.");
-    }
-    started = true;
-    heartBtn.textContent = "💞";
-    startHearts();
-  }
-});
-
-function startHearts() {
+btn.addEventListener("click", () => {
   setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerText = "💗";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 16 + 14 + "px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 9000);
-  }, 700);
-}
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = "💗";
+    h.style.left = Math.random() * 100 + "vw";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 6000);
+  }, 400);
+});
 </script>
 
 </body>

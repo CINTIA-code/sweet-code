@@ -13,12 +13,12 @@
 
 body {
   height: 100vh;
-  background: linear-gradient(180deg, #f6e7ea, #fdf6f0);
+  background: linear-gradient(180deg, #f7e9ec, #fdf6f1);
   font-family: Georgia, serif;
   overflow: hidden;
 }
 
-/* Container central */
+/* Container */
 .container {
   height: 100%;
   display: flex;
@@ -26,41 +26,41 @@ body {
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 20px;
+  padding: 24px;
   position: relative;
   z-index: 2;
 }
 
-/* Botão coração */
+/* Coração central */
 #heartBtn {
-  font-size: 64px;
+  font-size: 78px; /* maior, mas não exagerado */
   background: none;
   border: none;
   cursor: pointer;
-  animation: pulse 1.8s infinite;
+  animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.15); }
+  50% { transform: scale(1.12); }
   100% { transform: scale(1); }
 }
 
-/* Texto “clique aqui” */
+/* Texto clique */
 .seta {
-  margin-top: 6px;
-  font-size: 14px;
+  margin-top: 8px;
+  font-size: 15px;
   color: #7a3a3a;
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 /* Mensagem */
 .mensagem {
-  margin-top: 30px;
+  margin-top: 34px;
   max-width: 720px;
-  font-size: 18px;
-  line-height: 1.8;
-  color: #4b1f1f;
+  font-size: 20px; /* texto maior */
+  line-height: 1.9;
+  color: #4a1f1f;
 }
 
 /* Corações subindo */
@@ -69,7 +69,7 @@ body {
   bottom: -20px;
   font-size: 18px;
   color: #c94a6a;
-  animation: subir 8s linear forwards;
+  animation: subir 9s linear forwards;
   opacity: 0.8;
 }
 
@@ -87,10 +87,9 @@ body {
   }
 }
 
-/* Player discreto (necessário para liberar áudio) */
+/* Áudio escondido */
 audio {
-  margin-top: 15px;
-  width: 260px;
+  display: none;
 }
 </style>
 </head>
@@ -99,14 +98,13 @@ audio {
 
 <div class="container">
 
-  <!-- Coração clicável -->
+  <!-- Coração -->
   <button id="heartBtn">💗</button>
   <div class="seta">clique no coração</div>
 
-  <!-- Player de áudio (instrumental permitido) -->
-  <audio id="music" controls preload="auto" playsinline>
+  <!-- Áudio instrumental permitido -->
+  <audio id="music" preload="auto" playsinline>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8b6b5f8d3f.mp3" type="audio/mpeg">
-    Seu navegador não suporta áudio.
   </audio>
 
   <!-- Mensagem -->
@@ -135,27 +133,29 @@ const heartBtn = document.getElementById("heartBtn");
 
 let started = false;
 
-// Clique no coração
-heartBtn.addEventListener("click", () => {
+heartBtn.addEventListener("click", async () => {
   if (!started) {
-    music.play();          // toca a música
+    try {
+      await music.play(); // garante execução após interação
+    } catch (e) {
+      console.log("Áudio bloqueado até interação.");
+    }
     started = true;
     heartBtn.textContent = "💞";
-    startHearts();         // inicia os corações
+    startHearts();
   }
 });
 
-// Corações subindo
 function startHearts() {
   setInterval(() => {
     const heart = document.createElement("div");
     heart.className = "heart";
     heart.innerText = "💗";
     heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 18 + 12 + "px";
+    heart.style.fontSize = Math.random() * 16 + 14 + "px";
     document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 8000);
-  }, 600);
+    setTimeout(() => heart.remove(), 9000);
+  }, 700);
 }
 </script>
 

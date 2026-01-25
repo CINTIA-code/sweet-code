@@ -1,0 +1,72 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background: linear-gradient(180deg, #f4e6e9, #fdf6f0);
+  font-family: 'Georgia', serif;
+  overflow: hidden;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: #4b1f1f;
+  position: relative;
+  z-index: 2;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1.2rem;
+  opacity: 0.85;
+}
+
+/* Botão música */
+#musicBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ffffffcc;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Corações */
+.heart {
+  position: fixed;
+  bottom: -20px;
+  font-size: 18px;
+  color: #c94a6a;
+  animation: floatUp 7s linear forwards;
+  opacity: 0.8;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-110vh) scale(1.4);
+    opacity: 0;
+  }
+}

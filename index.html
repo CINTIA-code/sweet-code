@@ -1,133 +1,84 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Sweet Code 💗</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Missão do Gael</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  height: 100vh;
-  background: linear-gradient(180deg, #f7e9ec, #fdf6f1);
-  font-family: Georgia, serif;
-  overflow: hidden;
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(#87CEEB, #ffffff);
+    font-family: Arial;
+    text-align: center;
 }
 
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 24px;
+#score {
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    font-size: 24px;
+    font-weight: bold;
 }
 
-/* Coração central */
-#heartBtn {
-  font-size: 80px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  animation: pulse 2s infinite;
+#player {
+    position: absolute;
+    bottom: 20px;
+    width: 100px;
 }
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1); }
-}
-
-/* Clique aqui */
-.seta {
-  margin-top: 6px;
-  font-size: 15px;
-  color: #7a3a3a;
-  opacity: 0.75;
-}
-
-/* Mensagem */
-.mensagem {
-  margin-top: 36px;
-  max-width: 720px;
-  font-size: 20px;
-  line-height: 1.9;
-  color: #4a1f1f;
-}
-
-/* Corações subindo */
-.heart {
-  position: fixed;
-  bottom: -20px;
-  font-size: 18px;
-  color: #c94a6a;
-  animation: subir 8s linear forwards;
-  opacity: 0.8;
-}
-
-@keyframes subir {
-  0% { transform: translateY(0) scale(1); opacity: 0; }
-  20% { opacity: 0.8; }
-  100% { transform: translateY(-120vh) scale(1.4); opacity: 0; }
+.star {
+    position: absolute;
+    width: 40px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <!-- Coração -->
-  <button id="heartBtn">💗</button>
-  <div class="seta">clique aqui</div>
-
-  <!-- Mensagem -->
-  <p class="mensagem">
-    Torço para que você esteja bem.<br><br>
-
-    Acho que, infelizmente, não podemos ter o que tivemos outra vez,
-    mas saiba que não é por falta de querer.<br><br>
-
-    Eu sempre quero você.<br>
-    Só você.<br><br>
-
-    Infelizmente, não vou poder falar que você vai ser minha esposinha 😭<br><br>
-
-    <em>
-      Com carinho,<br>
-      Isadora 💌💐
-    </em>
-  </p>
-
-</div>
+<div id="score">⭐ Pontos: 0</div>
+<img id="player" src="gael.png">
 
 <script>
-const heartBtn = document.getElementById("heartBtn");
-let started = false;
+let player = document.getElementById("player");
+let score = 0;
 
-heartBtn.addEventListener("click", () => {
-  if (started) return;
-  started = true;
-  heartBtn.textContent = "💞";
-  startHearts();
+player.style.left = "40%";
+
+document.addEventListener("touchmove", function(e) {
+    player.style.left = e.touches[0].clientX - 50 + "px";
 });
 
-function startHearts() {
-  setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerText = "💗";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 16 + 14 + "px";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 8000);
-  }, 600);
+function createStar() {
+    let star = document.createElement("img");
+    star.src = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
+    star.classList.add("star");
+    star.style.left = Math.random() * window.innerWidth + "px";
+    star.style.top = "0px";
+    document.body.appendChild(star);
+
+    let fall = setInterval(function() {
+        star.style.top = star.offsetTop + 5 + "px";
+
+        if (star.offsetTop > window.innerHeight) {
+            star.remove();
+            clearInterval(fall);
+        }
+
+        if (
+            star.offsetTop > window.innerHeight - 150 &&
+            star.offsetLeft < player.offsetLeft + 80 &&
+            star.offsetLeft + 40 > player.offsetLeft
+        ) {
+            score++;
+            document.getElementById("score").innerText = "⭐ Pontos: " + score;
+            star.remove();
+            clearInterval(fall);
+        }
+
+    }, 20);
 }
+
+setInterval(createStar, 1000);
 </script>
 
 </body>

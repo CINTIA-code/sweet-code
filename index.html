@@ -2,20 +2,21 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Missão do Gael</title>
+<title>Missão do Gael ⚽</title>
 
 <style>
 body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(#87CEEB, #ffffff);
+    background: linear-gradient(#000000, #444444);
     font-family: Arial;
     text-align: center;
+    color: white;
 }
 
 #score {
     position: absolute;
-    top: 10px;
+    top: 15px;
     width: 100%;
     font-size: 24px;
     font-weight: bold;
@@ -24,61 +25,67 @@ body {
 #player {
     position: absolute;
     bottom: 20px;
-    width: 100px;
+    width: 110px;
 }
-.star {
+
+.ball {
     position: absolute;
-    width: 40px;
+    width: 45px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="score">⭐ Pontos: 0</div>
+<div id="score">⚽ Gols: 0</div>
+
 <img id="player" src="gael.png">
+
+<audio id="goalSound" src="https://www.myinstants.com/media/sounds/crowd-cheer.mp3"></audio>
 
 <script>
 let player = document.getElementById("player");
 let score = 0;
+let goalSound = document.getElementById("goalSound");
 
 player.style.left = "40%";
 
 document.addEventListener("touchmove", function(e) {
-    player.style.left = e.touches[0].clientX - 50 + "px";
+    player.style.left = e.touches[0].clientX - 55 + "px";
 });
 
-function createStar() {
-    let star = document.createElement("img");
-    star.src = "https://cdn-icons-png.flaticon.com/512/1828/1828884.png";
-    star.classList.add("star");
-    star.style.left = Math.random() * window.innerWidth + "px";
-    star.style.top = "0px";
-    document.body.appendChild(star);
+function createBall() {
+    let ball = document.createElement("img");
+    ball.src = "https://cdn-icons-png.flaticon.com/512/53/53283.png";
+    ball.classList.add("ball");
+    ball.style.left = Math.random() * (window.innerWidth - 50) + "px";
+    ball.style.top = "0px";
+    document.body.appendChild(ball);
 
     let fall = setInterval(function() {
-        star.style.top = star.offsetTop + 5 + "px";
+        ball.style.top = ball.offsetTop + 6 + "px";
 
-        if (star.offsetTop > window.innerHeight) {
-            star.remove();
+        if (ball.offsetTop > window.innerHeight) {
+            ball.remove();
             clearInterval(fall);
         }
 
         if (
-            star.offsetTop > window.innerHeight - 150 &&
-            star.offsetLeft < player.offsetLeft + 80 &&
-            star.offsetLeft + 40 > player.offsetLeft
+            ball.offsetTop > window.innerHeight - 160 &&
+            ball.offsetLeft < player.offsetLeft + 90 &&
+            ball.offsetLeft + 45 > player.offsetLeft
         ) {
             score++;
-            document.getElementById("score").innerText = "⭐ Pontos: " + score;
-            star.remove();
+            document.getElementById("score").innerText = "⚽ Gols: " + score;
+            goalSound.play();
+            ball.remove();
             clearInterval(fall);
         }
 
     }, 20);
 }
 
-setInterval(createStar, 1000);
+setInterval(createBall, 900);
 </script>
 
 </body>

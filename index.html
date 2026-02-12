@@ -2,88 +2,43 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Missão do Gael ⚽</title>
+<title>Gael do Galo 🖤🤍</title>
 
 <style>
 body {
     margin: 0;
-    overflow: hidden;
     background-color: black;
+    font-family: Arial, sans-serif;
     color: white;
-    font-family: Arial;
 }
-#score {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 26px;
-    font-weight: bold;
+
+.container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
-#player {
-    position: absolute;
-    bottom: 20px;
-    width: 110px;
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 32px;
+    letter-spacing: 3px;
 }
-.ball {
-    position: absolute;
-    width: 45px;
+
+img {
+    width: 280px;
+    max-width: 90%;
 }
 </style>
 </head>
 
 <body>
 
-<div id="score">⚽ Gols: 0</div>
-
-<img id="player" src="gael.png">
-
-<audio id="goalSound" src="https://www.myinstants.com/media/sounds/crowd-cheer.mp3"></audio>
-
-<script>
-let player = document.getElementById("player");
-let score = 0;
-let goalSound = document.getElementById("goalSound");
-
-player.style.left = "40%";
-
-document.addEventListener("touchmove", function(e) {
-    player.style.left = e.touches[0].clientX - 55 + "px";
-});
-
-function createBall() {
-    let ball = document.createElement("img");
-    ball.src = "https://cdn-icons-png.flaticon.com/512/53/53283.png";
-    ball.classList.add("ball");
-    ball.style.left = Math.random() * (window.innerWidth - 50) + "px";
-    ball.style.top = "0px";
-    document.body.appendChild(ball);
-
-    let fall = setInterval(function() {
-        ball.style.top = ball.offsetTop + 6 + "px";
-
-        if (ball.offsetTop > window.innerHeight) {
-            ball.remove();
-            clearInterval(fall);
-        }
-
-        if (
-            ball.offsetTop > window.innerHeight - 160 &&
-            ball.offsetLeft < player.offsetLeft + 90 &&
-            ball.offsetLeft + 45 > player.offsetLeft
-        ) {
-            score++;
-            document.getElementById("score").innerText = "⚽ Gols: " + score;
-            goalSound.play();
-            ball.remove();
-            clearInterval(fall);
-        }
-
-    }, 20);
-}
-
-setInterval(createBall, 900);
-</script>
+<div class="container">
+    <h1>GAEL ⚽</h1>
+    <img src="gael .png" alt="Gael do Galo">
+</div>
 
 </body>
 </html>

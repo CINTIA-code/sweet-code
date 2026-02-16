@@ -2,43 +2,178 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gael do Galo 🖤🤍</title>
+<title>Gael Runner 🏃⚽</title>
 
 <style>
 body {
     margin: 0;
-    background-color: black;
+    overflow: hidden;
+    background: linear-gradient(to top, #000000, #222222);
     font-family: Arial, sans-serif;
     color: white;
 }
 
-.container {
+#game {
+    position: relative;
+    width: 100%;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow: hidden;
 }
 
-h1 {
-    margin-bottom: 20px;
-    font-size: 32px;
-    letter-spacing: 3px;
+#player {
+    position: absolute;
+    bottom: 0;
+    left: 60px;
+    width: 130px;
 }
 
-img {
-    width: 280px;
-    max-width: 90%;
+.obstacle {
+    position: absolute;
+    bottom: 0;
+    right: -60px;
+    width: 50px;
+}
+
+#score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 22px;
+}
+
+#medal {
+    position: absolute;
+    top: 35%;
+    width: 100%;
+    text-align: center;
+    font-size: 45px;
+    display: none;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+#gameover {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    display: none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>GAEL ⚽</h1>
-    <img src="gael .png" alt="Gael do Galo">
+<div id="game">
+    <div id="score">Pontos: 0</div>
+    <div id="medal">🏅 CAMPEÃO GAEL! 🏅</div>
+    <div id="gameover">💥 GAME OVER 💥</div>
+    <img id="player" src="gael.png">
 </div>
+
+<audio id="jumpSound" src="https://www.myinstants.com/media/sounds/jump.mp3"></audio>
+<audio id="winSound" src="https://www.myinstants.com/media/sounds/tada-fanfare.mp3"></audio>
+
+<script>
+let player = document.getElementById("player");
+let scoreDisplay = document.getElementById("score");
+let medal = document.getElementById("medal");
+let gameover = document.getElementById("gameover");
+let jumpSound = document.getElementById("jumpSound");
+let winSound = document.getElementById("winSound");
+
+let score = 0;
+let isJumping = false;
+let speed = 6;
+let gameRunning = true;
+
+document.addEventListener("touchstart", jump);
+document.addEventListener("keydown", jump);
+
+function jump() {
+    if (isJumping || !gameRunning) return;
+    isJumping = true;
+    jumpSound.play();
+
+    let up = 0;
+    let jumpInterval = setInterval(function() {
+        if (up >= 150) {
+            clearInterval(jumpInterval);
+
+            let downInterval = setInterval(function() {
+                if (up <= 0) {
+                    clearInterval(downInterval);
+                    isJumping = false;
+                }
+                up -= 6;
+                player.style.bottom = up + "px";
+            }, 20);
+
+        } else {
+            up += 6;
+            player.style.bottom = up + "px";
+        }
+    }, 20);
+}
+
+function createObstacle() {
+    if (!gameRunning) return;
+
+    let obstacle = document.createElement("img");
+    obstacle.src = "https://cdn-icons-png.flaticon.com/512/53/53283.png";
+    obstacle.classList.add("obstacle");
+    document.getElementById("game").appendChild(obstacle);
+
+    let move = setInterval(function() {
+        let obstacleRight = parseInt(getComputedStyle(obstacle).right);
+        obstacle.style.right = obstacleRight + speed + "px";
+
+        if (obstacleRight > window.innerWidth + 50) {
+            obstacle.remove();
+            clearInterval(move);
+        }
+
+        let playerBottom = parseInt(getComputedStyle(player).bottom);
+
+        if (
+            obstacleRight > window.innerWidth - 180 &&
+            obstacleRight < window.innerWidth - 80 &&
+            playerBottom < 60
+        ) {
+            gameRunning = false;
+            gameover.style.display = "block";
+            setTimeout(() => location.reload(), 2500);
+        }
+
+    }, 20);
+}
+
+setInterval(createObstacle, 1800);
+
+setInterval(function() {
+    if (!gameRunning) return;
+
+    score++;
+    scoreDisplay.innerText = "Pontos: " + score;
+
+    if (score % 20 === 0) {
+        speed += 1; // aumenta dificuldade
+    }
+
+    if (score >= 100) {
+        medal.style.display = "block";
+        winSound.play();
+        gameRunning = false;
+    }
+
+}, 200);
+</script>
 
 </body>
 </html>

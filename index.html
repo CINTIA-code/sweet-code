@@ -2,161 +2,32 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jogo da Família do Gael 💛</title>
 
 <style>
 body{
     margin:0;
-    font-family:Arial;
-    background:linear-gradient(to top,#4facfe,#00f2fe);
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
-    text-align:center;
+    background:#4facfe;
 }
 
-#game{
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    width:95%;
-    max-width:500px;
-    position:relative;
-}
-
-h2{
-    margin-bottom:20px;
-}
-
-#letters{
-    margin:20px 0;
-}
-
-button{
-    margin:5px;
-    padding:12px 16px;
-    font-size:18px;
-    border:none;
-    border-radius:8px;
-    background:#1976d2;
-    color:white;
-}
-
-#answer{
-    font-size:22px;
-    margin-top:15px;
-    min-height:30px;
-}
-
-#message{
-    margin-top:20px;
-    font-size:20px;
-    font-weight:bold;
-}
-
-/* Gael animado */
 #gael{
-    width:120px;
-    margin-top:15px;
-    display:none;
+    width:150px;
+    animation: clap 0.5s infinite alternate;
 }
 
-.clap{
-    animation: clapAnim 0.5s infinite alternate;
-}
-
-@keyframes clapAnim{
-    from { transform: rotate(-5deg); }
-    to { transform: rotate(5deg); }
+@keyframes clap{
+    from{ transform: rotate(-5deg); }
+    to{ transform: rotate(5deg); }
 }
 </style>
 </head>
 
 <body>
 
-<div id="game">
-    <h2 id="title"></h2>
-    <div id="letters"></div>
-    <div id="answer"></div>
-    <div id="message"></div>
-    <img id="gael" src="gael.png">
-</div>
-
-<script>
-let names = [
-"GAEL",
-"ANA CAROLINA",
-"RAFAEL",
-"ISADORA",
-"GABI",
-"RAIZA",
-"RAFAELA",
-"FERNANDO RAFAEL",
-"NEUZA",
-"VANESSA"
-];
-
-let current = 0;
-let answer = "";
-
-let title = document.getElementById("title");
-let lettersDiv = document.getElementById("letters");
-let answerDiv = document.getElementById("answer");
-let messageDiv = document.getElementById("message");
-let gaelImg = document.getElementById("gael");
-
-function shuffle(array){
-    return array.sort(() => Math.random() - 0.5);
-}
-
-function loadName(){
-    answer = "";
-    messageDiv.innerText = "";
-    answerDiv.innerText = "";
-    gaelImg.style.display = "none";
-    gaelImg.classList.remove("clap");
-
-    let name = names[current];
-    title.innerText = "Monte o nome de: " + name;
-
-    lettersDiv.innerHTML = "";
-
-    let letters = name.split("");
-    letters = shuffle(letters);
-
-    letters.forEach(letter => {
-        let btn = document.createElement("button");
-        btn.innerText = letter;
-        btn.onclick = function(){
-            answer += letter;
-            answerDiv.innerText = answer;
-
-            if(answer === name){
-                messageDiv.innerText = "🎉 Muito bem, Gael! 🎉";
-                gaelImg.style.display = "block";
-                gaelImg.classList.add("clap");
-
-                setTimeout(nextName,2000);
-            }
-        }
-        lettersDiv.appendChild(btn);
-    });
-}
-
-function nextName(){
-    current++;
-    if(current >= names.length){
-        messageDiv.innerText = "🏆 Você completou todos os nomes! 🏆";
-        gaelImg.style.display = "block";
-        gaelImg.classList.add("clap");
-        return;
-    }
-    loadName();
-}
-
-loadName();
-</script>
+<img id="gael" src="gael.png">
 
 </body>
 </html>

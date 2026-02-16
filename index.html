@@ -2,76 +2,73 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corredor Gaélico 🏃⚽</title>
+<title>Jogo da Família do Gael 💛</title>
 
 <style>
 body{
     margin:0;
-    overflow:hidden;
     font-family:Arial;
+    background:linear-gradient(to top,#4facfe,#00f2fe);
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
-    background:linear-gradient(to top,#1e3c72,#2a5298);
+    text-align:center;
 }
 
 #game{
-    position:relative;
-    width:900px;
-    max-width:95%;
-    height:500px;
-    overflow:hidden;
+    background:white;
+    padding:30px;
     border-radius:15px;
-    background:linear-gradient(to top,#2e7d32 80px,#0d47a1);
+    width:95%;
+    max-width:500px;
+    position:relative;
 }
 
-#ground{
-    position:absolute;
-    bottom:0;
-    width:100%;
-    height:80px;
-    background:#1b5e20;
+h2{
+    margin-bottom:20px;
 }
 
-#player{
-    position:absolute;
-    bottom:80px;
-    left:80px;
-    width:200px;
+#letters{
+    margin:20px 0;
 }
 
-.obstacle{
-    position:absolute;
-    bottom:80px;
-    right:-60px;
-    width:50px;
-}
-
-#score{
-    position:absolute;
-    top:20px;
-    left:20px;
-    font-size:22px;
+button{
+    margin:5px;
+    padding:12px 16px;
+    font-size:18px;
+    border:none;
+    border-radius:8px;
+    background:#1976d2;
     color:white;
 }
 
-#phase{
-    position:absolute;
-    top:20px;
-    right:20px;
+#answer{
     font-size:22px;
-    color:white;
+    margin-top:15px;
+    min-height:30px;
 }
 
 #message{
-    position:absolute;
-    top:40%;
-    width:100%;
-    text-align:center;
-    font-size:40px;
-    color:white;
+    margin-top:20px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+/* Gael animado */
+#gael{
+    width:120px;
+    margin-top:15px;
     display:none;
+}
+
+.clap{
+    animation: clapAnim 0.5s infinite alternate;
+}
+
+@keyframes clapAnim{
+    from { transform: rotate(-5deg); }
+    to { transform: rotate(5deg); }
 }
 </style>
 </head>
@@ -79,109 +76,86 @@ body{
 <body>
 
 <div id="game">
-    <div id="score">Pontos: 0</div>
-    <div id="phase">Fase 1</div>
+    <h2 id="title"></h2>
+    <div id="letters"></div>
+    <div id="answer"></div>
     <div id="message"></div>
-    <img id="player" src="gael.png">
-    <div id="ground"></div>
+    <img id="gael" src="gael.png">
 </div>
 
 <script>
-let player = document.getElementById("player");
-let scoreDisplay = document.getElementById("score");
-let phaseDisplay = document.getElementById("phase");
-let message = document.getElementById("message");
+let names = [
+"GAEL",
+"ANA CAROLINA",
+"RAFAEL",
+"ISADORA",
+"GABI",
+"RAIZA",
+"RAFAELA",
+"FERNANDO RAFAEL",
+"NEUZA",
+"VANESSA"
+];
 
-let score = 0;
-let phase = 1;
-let speed = 3; // começa bem devagar
-let isJumping = false;
-let running = true;
+let current = 0;
+let answer = "";
 
-document.addEventListener("touchstart", jump);
-document.addEventListener("keydown", jump);
+let title = document.getElementById("title");
+let lettersDiv = document.getElementById("letters");
+let answerDiv = document.getElementById("answer");
+let messageDiv = document.getElementById("message");
+let gaelImg = document.getElementById("gael");
 
-function jump(){
-    if(isJumping || !running) return;
-    isJumping = true;
-
-    let height = 0;
-
-    let up = setInterval(function(){
-        if(height >= 150){
-            clearInterval(up);
-
-            let down = setInterval(function(){
-                if(height <= 0){
-                    clearInterval(down);
-                    isJumping = false;
-                }
-                height -= 5;
-                player.style.bottom = (80 + height) + "px";
-            },20);
-
-        }else{
-            height += 5;
-            player.style.bottom = (80 + height) + "px";
-        }
-    },20);
+function shuffle(array){
+    return array.sort(() => Math.random() - 0.5);
 }
 
-function createObstacle(){
-    if(!running) return;
+function loadName(){
+    answer = "";
+    messageDiv.innerText = "";
+    answerDiv.innerText = "";
+    gaelImg.style.display = "none";
+    gaelImg.classList.remove("clap");
 
-    let obstacle = document.createElement("img");
-    obstacle.src = "https://cdn-icons-png.flaticon.com/512/53/53283.png";
-    obstacle.classList.add("obstacle");
-    document.getElementById("game").appendChild(obstacle);
+    let name = names[current];
+    title.innerText = "Monte o nome de: " + name;
 
-    let move = setInterval(function(){
-        let right = parseInt(getComputedStyle(obstacle).right);
-        obstacle.style.right = (right + speed) + "px";
+    lettersDiv.innerHTML = "";
 
-        if(right > 900){
-            obstacle.remove();
-            clearInterval(move);
+    let letters = name.split("");
+    letters = shuffle(letters);
+
+    letters.forEach(letter => {
+        let btn = document.createElement("button");
+        btn.innerText = letter;
+        btn.onclick = function(){
+            answer += letter;
+            answerDiv.innerText = answer;
+
+            if(answer === name){
+                messageDiv.innerText = "🎉 Muito bem, Gael! 🎉";
+                gaelImg.style.display = "block";
+                gaelImg.classList.add("clap");
+
+                setTimeout(nextName,2000);
+            }
         }
-
-        let playerBottom = parseInt(getComputedStyle(player).bottom);
-
-        if(right > 600 && right < 760 && playerBottom < 150){
-            running = false;
-            message.innerText = "💥 GAME OVER 💥";
-            message.style.display = "block";
-        }
-
-    },20);
+        lettersDiv.appendChild(btn);
+    });
 }
 
-setInterval(createObstacle, 3000);
-
-setInterval(function(){
-    if(!running) return;
-
-    score++;
-    scoreDisplay.innerText = "Pontos: " + score;
-
-    if(score >= 100 && phase === 1){
-        phase = 2;
-        speed = 4;
-        phaseDisplay.innerText = "Fase 2";
+function nextName(){
+    current++;
+    if(current >= names.length){
+        messageDiv.innerText = "🏆 Você completou todos os nomes! 🏆";
+        gaelImg.style.display = "block";
+        gaelImg.classList.add("clap");
+        return;
     }
+    loadName();
+}
 
-    if(score >= 150 && phase === 2){
-        phase = 3;
-        speed = 5;
-        phaseDisplay.innerText = "Fase 3";
-    }
-
-    if(score >= 300){
-        running = false;
-        message.innerText = "🏆 GAEL CAMPEÃO! 🏆";
-        message.style.display = "block";
-    }
-
-},300);
+loadName();
 </script>
 
 </body>

@@ -2,32 +2,170 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogo da Família do Gael 💛</title>
 
 <style>
 body{
     margin:0;
+    font-family:Arial;
+    background:linear-gradient(to top,#4facfe,#00f2fe);
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
-    background:#4facfe;
+    text-align:center;
+}
+
+#game{
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    width:95%;
+    max-width:500px;
+}
+
+h2{
+    margin-bottom:15px;
+}
+
+#letters{
+    margin:15px 0;
+}
+
+button{
+    margin:5px;
+    padding:12px 16px;
+    font-size:18px;
+    border:none;
+    border-radius:8px;
+    background:#1976d2;
+    color:white;
+}
+
+#answer{
+    font-size:24px;
+    margin-top:10px;
+    min-height:30px;
+}
+
+#message{
+    margin-top:15px;
+    font-size:20px;
+    font-weight:bold;
 }
 
 #gael{
-    width:150px;
-    animation: clap 0.5s infinite alternate;
+    width:120px;
+    margin-top:15px;
+    display:none;
 }
 
-@keyframes clap{
-    from{ transform: rotate(-5deg); }
-    to{ transform: rotate(5deg); }
+.clap{
+    animation: clapAnim 0.4s infinite alternate;
+}
+
+@keyframes clapAnim{
+    from{ transform: rotate(-8deg); }
+    to{ transform: rotate(8deg); }
 }
 </style>
 </head>
 
 <body>
 
-<img id="gael" src="gael.png">
+<div id="game">
+    <h2 id="title"></h2>
+    <div id="letters"></div>
+    <div id="answer"></div>
+    <button onclick="erase()">Apagar</button>
+    <div id="message"></div>
+    <img id="gael" src="gael.png">
+</div>
+
+<audio id="parabens" src="https://www.myinstants.com/media/sounds/kids-cheering.mp3"></audio>
+
+<script>
+let names = [
+"GAEL",
+"ANA CAROLINA",
+"RAFAEL",
+"ISADORA",
+"GABI",
+"RAIZA",
+"RAFAELA",
+"FERNANDO RAFAEL",
+"NEUZA",
+"VANESSA"
+];
+
+let current = 0;
+let answer = "";
+
+let title = document.getElementById("title");
+let lettersDiv = document.getElementById("letters");
+let answerDiv = document.getElementById("answer");
+let messageDiv = document.getElementById("message");
+let gaelImg = document.getElementById("gael");
+let music = document.getElementById("parabens");
+
+function shuffle(array){
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function loadName(){
+    answer = "";
+    messageDiv.innerText = "";
+    answerDiv.innerText = "";
+    gaelImg.style.display = "none";
+    gaelImg.classList.remove("clap");
+
+    let name = names[current];
+    title.innerText = "Monte o nome de: " + name;
+
+    lettersDiv.innerHTML = "";
+
+    let letters = name.split("");
+    letters = shuffle(letters);
+
+    letters.forEach(letter => {
+        let btn = document.createElement("button");
+        btn.innerText = letter;
+        btn.onclick = function(){
+            answer += letter;
+            answerDiv.innerText = answer;
+
+            if(answer === name){
+                messageDiv.innerText = "🎉 Muito bem, Gael! 🎉";
+                gaelImg.style.display = "block";
+                gaelImg.classList.add("clap");
+                music.play();
+
+                setTimeout(nextName,2500);
+            }
+        }
+        lettersDiv.appendChild(btn);
+    });
+}
+
+function erase(){
+    answer = answer.slice(0,-1);
+    answerDiv.innerText = answer;
+}
+
+function nextName(){
+    current++;
+    if(current >= names.length){
+        messageDiv.innerText = "🏆 Você completou todos os nomes! 🏆";
+        gaelImg.style.display = "block";
+        gaelImg.classList.add("clap");
+        music.play();
+        return;
+    }
+    loadName();
+}
+
+loadName();
+</script>
 
 </body>
 </html>

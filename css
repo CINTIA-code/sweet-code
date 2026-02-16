@@ -1,1 +1,67 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1a1a1a, #000000);
+    font-family: Arial, sans-serif;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
+#game {
+    position: relative;
+    width: 900px;
+    max-width: 95%;
+    height: 500px;
+    background: linear-gradient(to top, #111, #222);
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.1);
+}
+
+#player {
+    position: absolute;
+    bottom: 0;
+    left: 80px;
+    width: 160px;
+}
+
+.obstacle {
+    position: absolute;
+    bottom: 0;
+    right: -60px;
+    width: 60px;
+}
+
+#score {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-size: 22px;
+}
+
+#medal {
+    position: absolute;
+    top: 35%;
+    width: 100%;
+    text-align: center;
+    font-size: 45px;
+    display: none;
+    animation: pulse 1s infinite;
+}
+
+#gameover {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    display: none;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}

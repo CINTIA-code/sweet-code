@@ -8,28 +8,43 @@
 body {
     margin: 0;
     overflow: hidden;
-    background: linear-gradient(to top, #000000, #222222);
     font-family: Arial, sans-serif;
     color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to top, #0f2027, #203a43, #2c5364);
 }
 
 #game {
     position: relative;
-    width: 100%;
-    height: 100vh;
+    width: 900px;
+    max-width: 95%;
+    height: 500px;
     overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+}
+
+#ground {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: #1b5e20;
 }
 
 #player {
     position: absolute;
-    bottom: 0;
-    left: 60px;
-    width: 130px;
+    bottom: 60px;
+    left: 80px;
+    width: 180px;
 }
 
 .obstacle {
     position: absolute;
-    bottom: 0;
+    bottom: 60px;
     right: -60px;
     width: 50px;
 }
@@ -41,23 +56,14 @@ body {
     font-size: 22px;
 }
 
-#medal {
+#phase {
     position: absolute;
-    top: 35%;
-    width: 100%;
-    text-align: center;
-    font-size: 45px;
-    display: none;
-    animation: pulse 1s infinite;
+    top: 20px;
+    right: 20px;
+    font-size: 22px;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-#gameover {
+#message {
     position: absolute;
     top: 40%;
     width: 100%;
@@ -72,25 +78,22 @@ body {
 
 <div id="game">
     <div id="score">Pontos: 0</div>
-    <div id="medal">🏅 CAMPEÃO GAEL! 🏅</div>
-    <div id="gameover">💥 GAME OVER 💥</div>
+    <div id="phase">Fase 1</div>
+    <div id="message"></div>
     <img id="player" src="gael.png">
+    <div id="ground"></div>
 </div>
-
-<audio id="jumpSound" src="https://www.myinstants.com/media/sounds/jump.mp3"></audio>
-<audio id="winSound" src="https://www.myinstants.com/media/sounds/tada-fanfare.mp3"></audio>
 
 <script>
 let player = document.getElementById("player");
 let scoreDisplay = document.getElementById("score");
-let medal = document.getElementById("medal");
-let gameover = document.getElementById("gameover");
-let jumpSound = document.getElementById("jumpSound");
-let winSound = document.getElementById("winSound");
+let phaseDisplay = document.getElementById("phase");
+let message = document.getElementById("message");
 
 let score = 0;
 let isJumping = false;
-let speed = 6;
+let speed = 4; // mais lento
+let phase = 1;
 let gameRunning = true;
 
 document.addEventListener("touchstart", jump);
@@ -99,11 +102,10 @@ document.addEventListener("keydown", jump);
 function jump() {
     if (isJumping || !gameRunning) return;
     isJumping = true;
-    jumpSound.play();
 
     let up = 0;
     let jumpInterval = setInterval(function() {
-        if (up >= 150) {
+        if (up >= 140) {
             clearInterval(jumpInterval);
 
             let downInterval = setInterval(function() {
@@ -111,13 +113,13 @@ function jump() {
                     clearInterval(downInterval);
                     isJumping = false;
                 }
-                up -= 6;
-                player.style.bottom = up + "px";
+                up -= 5;
+                player.style.bottom = (60 + up) + "px";
             }, 20);
 
         } else {
-            up += 6;
-            player.style.bottom = up + "px";
+            up += 5;
+            player.style.bottom = (60 + up) + "px";
         }
     }, 20);
 }
@@ -134,7 +136,7 @@ function createObstacle() {
         let obstacleRight = parseInt(getComputedStyle(obstacle).right);
         obstacle.style.right = obstacleRight + speed + "px";
 
-        if (obstacleRight > window.innerWidth + 50) {
+        if (obstacleRight > window.innerWidth) {
             obstacle.remove();
             clearInterval(move);
         }
@@ -142,19 +144,19 @@ function createObstacle() {
         let playerBottom = parseInt(getComputedStyle(player).bottom);
 
         if (
-            obstacleRight > window.innerWidth - 180 &&
-            obstacleRight < window.innerWidth - 80 &&
-            playerBottom < 60
+            obstacleRight > 650 &&
+            obstacleRight < 800 &&
+            playerBottom < 120
         ) {
             gameRunning = false;
-            gameover.style.display = "block";
-            setTimeout(() => location.reload(), 2500);
+            message.innerText = "💥 GAME OVER 💥";
+            message.style.display = "block";
         }
 
     }, 20);
 }
 
-setInterval(createObstacle, 1800);
+setInterval(createObstacle, 2500);
 
 setInterval(function() {
     if (!gameRunning) return;
@@ -162,14 +164,22 @@ setInterval(function() {
     score++;
     scoreDisplay.innerText = "Pontos: " + score;
 
-    if (score % 20 === 0) {
-        speed += 1; // aumenta dificuldade
+    if (score >= 100 && phase === 1) {
+        phase = 2;
+        speed = 6;
+        phaseDisplay.innerText = "Fase 2";
     }
 
-    if (score >= 100) {
-        medal.style.display = "block";
-        winSound.play();
+    if (score >= 150 && phase === 2) {
+        phase = 3;
+        speed = 8;
+        phaseDisplay.innerText = "Fase 3";
+    }
+
+    if (score >= 300) {
         gameRunning = false;
+        message.innerText = "🏆 GAEL CAMPEÃO! 🏆";
+        message.style.display = "block";
     }
 
 }, 200);

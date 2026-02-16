@@ -2,74 +2,76 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gael Runner 🏃⚽</title>
+<title>Corredor Gaélico 🏃⚽</title>
 
 <style>
-body {
-    margin: 0;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(to top, #0f2027, #203a43, #2c5364);
+body{
+    margin:0;
+    overflow:hidden;
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:linear-gradient(to top,#1e3c72,#2a5298);
 }
 
-#game {
-    position: relative;
-    width: 900px;
-    max-width: 95%;
-    height: 500px;
-    overflow: hidden;
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+#game{
+    position:relative;
+    width:900px;
+    max-width:95%;
+    height:500px;
+    overflow:hidden;
+    border-radius:15px;
+    background:linear-gradient(to top,#2e7d32 80px,#0d47a1);
 }
 
-#ground {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 60px;
-    background: #1b5e20;
+#ground{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    height:80px;
+    background:#1b5e20;
 }
 
-#player {
-    position: absolute;
-    bottom: 60px;
-    left: 80px;
-    width: 180px;
+#player{
+    position:absolute;
+    bottom:80px;
+    left:80px;
+    width:200px;
 }
 
-.obstacle {
-    position: absolute;
-    bottom: 60px;
-    right: -60px;
-    width: 50px;
+.obstacle{
+    position:absolute;
+    bottom:80px;
+    right:-60px;
+    width:50px;
 }
 
-#score {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 22px;
+#score{
+    position:absolute;
+    top:20px;
+    left:20px;
+    font-size:22px;
+    color:white;
 }
 
-#phase {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    font-size: 22px;
+#phase{
+    position:absolute;
+    top:20px;
+    right:20px;
+    font-size:22px;
+    color:white;
 }
 
-#message {
-    position: absolute;
-    top: 40%;
-    width: 100%;
-    text-align: center;
-    font-size: 40px;
-    display: none;
+#message{
+    position:absolute;
+    top:40%;
+    width:100%;
+    text-align:center;
+    font-size:40px;
+    color:white;
+    display:none;
 }
 </style>
 </head>
@@ -91,98 +93,95 @@ let phaseDisplay = document.getElementById("phase");
 let message = document.getElementById("message");
 
 let score = 0;
-let isJumping = false;
-let speed = 4; // mais lento
 let phase = 1;
-let gameRunning = true;
+let speed = 3; // começa bem devagar
+let isJumping = false;
+let running = true;
 
 document.addEventListener("touchstart", jump);
 document.addEventListener("keydown", jump);
 
-function jump() {
-    if (isJumping || !gameRunning) return;
+function jump(){
+    if(isJumping || !running) return;
     isJumping = true;
 
-    let up = 0;
-    let jumpInterval = setInterval(function() {
-        if (up >= 140) {
-            clearInterval(jumpInterval);
+    let height = 0;
 
-            let downInterval = setInterval(function() {
-                if (up <= 0) {
-                    clearInterval(downInterval);
+    let up = setInterval(function(){
+        if(height >= 150){
+            clearInterval(up);
+
+            let down = setInterval(function(){
+                if(height <= 0){
+                    clearInterval(down);
                     isJumping = false;
                 }
-                up -= 5;
-                player.style.bottom = (60 + up) + "px";
-            }, 20);
+                height -= 5;
+                player.style.bottom = (80 + height) + "px";
+            },20);
 
-        } else {
-            up += 5;
-            player.style.bottom = (60 + up) + "px";
+        }else{
+            height += 5;
+            player.style.bottom = (80 + height) + "px";
         }
-    }, 20);
+    },20);
 }
 
-function createObstacle() {
-    if (!gameRunning) return;
+function createObstacle(){
+    if(!running) return;
 
     let obstacle = document.createElement("img");
     obstacle.src = "https://cdn-icons-png.flaticon.com/512/53/53283.png";
     obstacle.classList.add("obstacle");
     document.getElementById("game").appendChild(obstacle);
 
-    let move = setInterval(function() {
-        let obstacleRight = parseInt(getComputedStyle(obstacle).right);
-        obstacle.style.right = obstacleRight + speed + "px";
+    let move = setInterval(function(){
+        let right = parseInt(getComputedStyle(obstacle).right);
+        obstacle.style.right = (right + speed) + "px";
 
-        if (obstacleRight > window.innerWidth) {
+        if(right > 900){
             obstacle.remove();
             clearInterval(move);
         }
 
         let playerBottom = parseInt(getComputedStyle(player).bottom);
 
-        if (
-            obstacleRight > 650 &&
-            obstacleRight < 800 &&
-            playerBottom < 120
-        ) {
-            gameRunning = false;
+        if(right > 600 && right < 760 && playerBottom < 150){
+            running = false;
             message.innerText = "💥 GAME OVER 💥";
             message.style.display = "block";
         }
 
-    }, 20);
+    },20);
 }
 
-setInterval(createObstacle, 2500);
+setInterval(createObstacle, 3000);
 
-setInterval(function() {
-    if (!gameRunning) return;
+setInterval(function(){
+    if(!running) return;
 
     score++;
     scoreDisplay.innerText = "Pontos: " + score;
 
-    if (score >= 100 && phase === 1) {
+    if(score >= 100 && phase === 1){
         phase = 2;
-        speed = 6;
+        speed = 4;
         phaseDisplay.innerText = "Fase 2";
     }
 
-    if (score >= 150 && phase === 2) {
+    if(score >= 150 && phase === 2){
         phase = 3;
-        speed = 8;
+        speed = 5;
         phaseDisplay.innerText = "Fase 3";
     }
 
-    if (score >= 300) {
-        gameRunning = false;
+    if(score >= 300){
+        running = false;
         message.innerText = "🏆 GAEL CAMPEÃO! 🏆";
         message.style.display = "block";
     }
 
-}, 200);
+},300);
 </script>
 
 </body>

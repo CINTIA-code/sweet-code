@@ -3,39 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gael Aprende Brincando</title>
+<title>Missão do Pequeno Herói</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial, sans-serif;
-    background:linear-gradient(to top,#4facfe,#00f2fe);
+    background:linear-gradient(135deg,#4facfe,#00f2fe);
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
-    text-align:center;
 }
 
 #game{
     background:white;
+    width:95%;
+    max-width:520px;
     padding:25px;
     border-radius:20px;
-    width:95%;
-    max-width:500px;
-    position:relative;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
-h2{
-    margin-bottom:15px;
+#stars{
+    font-size:20px;
+    margin-bottom:10px;
 }
 
 #gael{
     width:130px;
     margin:15px 0;
+    transition:0.3s;
 }
 
-/* Corrida */
 .run{
     animation: runAnim 0.3s infinite alternate;
 }
@@ -46,8 +47,8 @@ h2{
 }
 
 button{
-    margin:8px;
     padding:12px 18px;
+    margin:6px;
     font-size:16px;
     border:none;
     border-radius:10px;
@@ -59,12 +60,6 @@ button{
 button:hover{
     background:#125ea8;
 }
-
-#stars{
-    font-size:20px;
-    margin-bottom:10px;
-}
-
 </style>
 </head>
 
@@ -72,115 +67,117 @@ button:hover{
 
 <div id="game">
     <div id="stars">⭐ 0</div>
-    <h2 id="title">Fase 1 – Corrida</h2>
+    <h2 id="title">Missão 1</h2>
     <img id="gael" src="gael.png">
     <div id="content"></div>
 </div>
 
-<audio id="clapSound" src="https://www.myinstants.com/media/sounds/kids-cheering.mp3"></audio>
+<audio id="clap" src="https://www.myinstants.com/media/sounds/kids-cheering.mp3"></audio>
 
 <script>
 
-let phase = 1;
-let stars = 0;
+const game = {
+    phase: 1,
+    stars: 0,
 
-const title = document.getElementById("title");
-const content = document.getElementById("content");
-const gael = document.getElementById("gael");
-const starsDisplay = document.getElementById("stars");
-const clapSound = document.getElementById("clapSound");
+    updateStars(){
+        document.getElementById("stars").innerText = "⭐ " + this.stars;
+    },
 
-function updateStars(){
-    starsDisplay.innerText = "⭐ " + stars;
-}
+    next(){
+        this.phase++;
+        this.load();
+    },
 
-function nextPhase(){
-    phase++;
-    if(phase === 2){
-        loadPhase2();
-    } else if(phase === 3){
-        loadPhase3();
-    } else {
-        showFinal();
-    }
-}
+    load(){
+        const title = document.getElementById("title");
+        const content = document.getElementById("content");
+        const gael = document.getElementById("gael");
 
-/* FASE 1 */
-function loadPhase1(){
-    title.innerText = "Fase 1 – Corrida";
-    content.innerHTML = "";
-    gael.classList.add("run");
+        content.innerHTML = "";
 
-    setTimeout(() => {
-        title.innerText = "⚠️ Cuidado para não se machucar!";
-        gael.classList.remove("run");
+        if(this.phase === 1){
+            title.innerText = "Missão 1 – Segurança";
+            gael.classList.add("run");
 
-        let btn = document.createElement("button");
-        btn.innerText = "Respeitar orientação";
-        btn.onclick = function(){
-            stars++;
-            updateStars();
-            clapSound.play();
-            nextPhase();
+            setTimeout(() => {
+                gael.classList.remove("run");
+                title.innerText = "⚠️ Devemos correr dentro de casa?";
+
+                let sim = document.createElement("button");
+                sim.innerText = "SIM";
+
+                let nao = document.createElement("button");
+                nao.innerText = "NÃO";
+
+                nao.onclick = () => {
+                    this.stars++;
+                    this.updateStars();
+                    document.getElementById("clap").play();
+                    this.next();
+                };
+
+                content.appendChild(sim);
+                content.appendChild(nao);
+
+            },2000);
         }
-        content.appendChild(btn);
 
-    }, 3000);
-}
+        else if(this.phase === 2){
+            title.innerText = "Missão 2 – Conhecimento";
 
-/* FASE 2 */
-function loadPhase2(){
-    title.innerText = "Fase 2 – Clique na letra G";
-    content.innerHTML = "";
+            let question = document.createElement("p");
+            question.innerText = "Clique na letra G";
 
-    let options = ["A","G","B","C"];
+            let letters = ["A","G","B","C"];
 
-    options.forEach(letter => {
-        let btn = document.createElement("button");
-        btn.innerText = letter;
+            letters.forEach(letter=>{
+                let btn = document.createElement("button");
+                btn.innerText = letter;
 
-        btn.onclick = function(){
-            if(letter === "G"){
-                stars++;
-                updateStars();
-                clapSound.play();
-                nextPhase();
+                btn.onclick = () =>{
+                    if(letter === "G"){
+                        this.stars++;
+                        this.updateStars();
+                        document.getElementById("clap").play();
+                        this.next();
+                    }
+                }
+
+                content.appendChild(btn);
+            });
+
+            content.prepend(question);
+        }
+
+        else if(this.phase === 3){
+            title.innerText = "Missão 3 – Respeito";
+
+            let question = document.createElement("p");
+            question.innerText = "Devemos respeitar a mamãe?";
+
+            let sim = document.createElement("button");
+            sim.innerText = "SIM";
+
+            sim.onclick = () => {
+                this.stars++;
+                this.updateStars();
+                document.getElementById("clap").play();
+                this.next();
             }
+
+            content.appendChild(question);
+            content.appendChild(sim);
         }
 
-        content.appendChild(btn);
-    });
-}
-
-/* FASE 3 */
-function loadPhase3(){
-    title.innerText = "Fase 3 – Devemos respeitar a mamãe?";
-    content.innerHTML = "";
-
-    let sim = document.createElement("button");
-    sim.innerText = "SIM";
-
-    sim.onclick = function(){
-        stars++;
-        updateStars();
-        clapSound.play();
-        nextPhase();
+        else{
+            title.innerText = "🏆 Missão Concluída!";
+            content.innerHTML = "<h3>Você ganhou "+this.stars+" estrelas!</h3>";
+        }
     }
+};
 
-    let nao = document.createElement("button");
-    nao.innerText = "NÃO";
-
-    content.appendChild(sim);
-    content.appendChild(nao);
-}
-
-/* FINAL */
-function showFinal(){
-    title.innerText = "🏆 Parabéns Gael!";
-    content.innerHTML = "<h3>Você ganhou " + stars + " estrelas!</h3>";
-}
-
-loadPhase1();
+game.load();
 
 </script>
 

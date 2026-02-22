@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jogo da Família do Gael 💛</title>
+<title>Gael Aprende Brincando</title>
 
 <style>
 body{
     margin:0;
-    font-family:Arial;
+    font-family:Arial, sans-serif;
     background:linear-gradient(to top,#4facfe,#00f2fe);
     display:flex;
     justify-content:center;
@@ -19,152 +20,168 @@ body{
 #game{
     background:white;
     padding:25px;
-    border-radius:15px;
+    border-radius:20px;
     width:95%;
     max-width:500px;
+    position:relative;
 }
 
 h2{
     margin-bottom:15px;
 }
 
-#letters{
+#gael{
+    width:130px;
     margin:15px 0;
 }
 
+/* Corrida */
+.run{
+    animation: runAnim 0.3s infinite alternate;
+}
+
+@keyframes runAnim{
+    from{ transform: translateX(-5px); }
+    to{ transform: translateX(5px); }
+}
+
 button{
-    margin:5px;
-    padding:12px 16px;
-    font-size:18px;
+    margin:8px;
+    padding:12px 18px;
+    font-size:16px;
     border:none;
-    border-radius:8px;
+    border-radius:10px;
     background:#1976d2;
     color:white;
+    cursor:pointer;
 }
 
-#answer{
-    font-size:24px;
-    margin-top:10px;
-    min-height:30px;
+button:hover{
+    background:#125ea8;
 }
 
-#message{
-    margin-top:15px;
+#stars{
     font-size:20px;
-    font-weight:bold;
+    margin-bottom:10px;
 }
 
-#gael{
-    width:120px;
-    margin-top:15px;
-    display:none;
-}
-
-.clap{
-    animation: clapAnim 0.4s infinite alternate;
-}
-
-@keyframes clapAnim{
-    from{ transform: rotate(-8deg); }
-    to{ transform: rotate(8deg); }
-}
 </style>
 </head>
 
 <body>
 
 <div id="game">
-    <h2 id="title"></h2>
-    <div id="letters"></div>
-    <div id="answer"></div>
-    <button onclick="erase()">Apagar</button>
-    <div id="message"></div>
+    <div id="stars">⭐ 0</div>
+    <h2 id="title">Fase 1 – Corrida</h2>
     <img id="gael" src="gael.png">
+    <div id="content"></div>
 </div>
 
-<audio id="parabens" src="https://www.myinstants.com/media/sounds/kids-cheering.mp3"></audio>
+<audio id="clapSound" src="https://www.myinstants.com/media/sounds/kids-cheering.mp3"></audio>
 
 <script>
-let names = [
-"GAEL",
-"ANA CAROLINA",
-"RAFAEL",
-"ISADORA",
-"GABI",
-"RAIZA",
-"RAFAELA",
-"FERNANDO RAFAEL",
-"NEUZA",
-"VANESSA"
-];
 
-let current = 0;
-let answer = "";
+let phase = 1;
+let stars = 0;
 
-let title = document.getElementById("title");
-let lettersDiv = document.getElementById("letters");
-let answerDiv = document.getElementById("answer");
-let messageDiv = document.getElementById("message");
-let gaelImg = document.getElementById("gael");
-let music = document.getElementById("parabens");
+const title = document.getElementById("title");
+const content = document.getElementById("content");
+const gael = document.getElementById("gael");
+const starsDisplay = document.getElementById("stars");
+const clapSound = document.getElementById("clapSound");
 
-function shuffle(array){
-    return array.sort(() => Math.random() - 0.5);
+function updateStars(){
+    starsDisplay.innerText = "⭐ " + stars;
 }
 
-function loadName(){
-    answer = "";
-    messageDiv.innerText = "";
-    answerDiv.innerText = "";
-    gaelImg.style.display = "none";
-    gaelImg.classList.remove("clap");
+function nextPhase(){
+    phase++;
+    if(phase === 2){
+        loadPhase2();
+    } else if(phase === 3){
+        loadPhase3();
+    } else {
+        showFinal();
+    }
+}
 
-    let name = names[current];
-    title.innerText = "Monte o nome de: " + name;
+/* FASE 1 */
+function loadPhase1(){
+    title.innerText = "Fase 1 – Corrida";
+    content.innerHTML = "";
+    gael.classList.add("run");
 
-    lettersDiv.innerHTML = "";
+    setTimeout(() => {
+        title.innerText = "⚠️ Cuidado para não se machucar!";
+        gael.classList.remove("run");
 
-    let letters = name.split("");
-    letters = shuffle(letters);
+        let btn = document.createElement("button");
+        btn.innerText = "Respeitar orientação";
+        btn.onclick = function(){
+            stars++;
+            updateStars();
+            clapSound.play();
+            nextPhase();
+        }
+        content.appendChild(btn);
 
-    letters.forEach(letter => {
+    }, 3000);
+}
+
+/* FASE 2 */
+function loadPhase2(){
+    title.innerText = "Fase 2 – Clique na letra G";
+    content.innerHTML = "";
+
+    let options = ["A","G","B","C"];
+
+    options.forEach(letter => {
         let btn = document.createElement("button");
         btn.innerText = letter;
+
         btn.onclick = function(){
-            answer += letter;
-            answerDiv.innerText = answer;
-
-            if(answer === name){
-                messageDiv.innerText = "🎉 Muito bem, Gael! 🎉";
-                gaelImg.style.display = "block";
-                gaelImg.classList.add("clap");
-                music.play();
-
-                setTimeout(nextName,2500);
+            if(letter === "G"){
+                stars++;
+                updateStars();
+                clapSound.play();
+                nextPhase();
             }
         }
-        lettersDiv.appendChild(btn);
+
+        content.appendChild(btn);
     });
 }
 
-function erase(){
-    answer = answer.slice(0,-1);
-    answerDiv.innerText = answer;
-}
+/* FASE 3 */
+function loadPhase3(){
+    title.innerText = "Fase 3 – Devemos respeitar a mamãe?";
+    content.innerHTML = "";
 
-function nextName(){
-    current++;
-    if(current >= names.length){
-        messageDiv.innerText = "🏆 Você completou todos os nomes! 🏆";
-        gaelImg.style.display = "block";
-        gaelImg.classList.add("clap");
-        music.play();
-        return;
+    let sim = document.createElement("button");
+    sim.innerText = "SIM";
+
+    sim.onclick = function(){
+        stars++;
+        updateStars();
+        clapSound.play();
+        nextPhase();
     }
-    loadName();
+
+    let nao = document.createElement("button");
+    nao.innerText = "NÃO";
+
+    content.appendChild(sim);
+    content.appendChild(nao);
 }
 
-loadName();
+/* FINAL */
+function showFinal(){
+    title.innerText = "🏆 Parabéns Gael!";
+    content.innerHTML = "<h3>Você ganhou " + stars + " estrelas!</h3>";
+}
+
+loadPhase1();
+
 </script>
 
 </body>

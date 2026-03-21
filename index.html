@@ -2,132 +2,200 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Gael Herói 💖</title>
-<script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
-<style>
-body{ margin:0; }
+<title>Gael: Herói do Amor 💖</title>
 
-#controls{
-    position:fixed;
-    bottom:20px;
-    width:100%;
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(#a1c4fd,#c2e9fb);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+#game{
+    width:95%;
+    max-width:500px;
+    background:white;
+    border-radius:20px;
+    padding:20px;
     text-align:center;
 }
 
+h1{
+    font-size:22px;
+}
+
 button{
-    font-size:20px;
     padding:15px;
-    margin:5px;
+    margin:8px;
+    font-size:18px;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     background:#ff9800;
     color:white;
+    width:100%;
+}
+
+button:hover{
+    background:#e65100;
+}
+
+#message{
+    margin-top:10px;
+    font-size:14px;
+    color:#555;
 }
 </style>
 </head>
 
 <body>
 
-<div id="controls">
-    <button onclick="moveLeft()">⬅️</button>
-    <button onclick="jump()">⬆️</button>
-    <button onclick="moveRight()">➡️</button>
+<div id="game">
+
+<h1 id="title">🌟 Gael: Herói do Amor</h1>
+
+<p id="story">Gael é um pequeno herói! Vamos ajudar ele a aprender coisas boas 💖</p>
+
+<div id="content"></div>
+
+<p id="message"></p>
+
 </div>
 
 <script>
 
-let stars = 0;
-let player, coins, text;
-let moveDir = 0;
+let phase = 1;
 
 // VOZ
-function speak(msg){
-    let speech = new SpeechSynthesisUtterance(msg);
-    speech.lang = "pt-BR";
-    speechSynthesis.speak(speech);
+function speak(text){
+    let msg = new SpeechSynthesisUtterance(text);
+    msg.lang = "pt-BR";
+    speechSynthesis.speak(msg);
 }
 
-// CONTROLES MOBILE
-function moveLeft(){ moveDir = -1; }
-function moveRight(){ moveDir = 1; }
-function jump(){
-    if(player.body.touching.down){
-        player.setVelocityY(-400);
-    }
+function next(){
+    phase++;
+    load();
 }
 
-const config = {
-    type: Phaser.AUTO,
-    width: 400,
-    height: 600,
-    backgroundColor: "#87CEEB",
-    physics: {
-        default: 'arcade',
-        arcade: { gravity: { y: 600 } }
-    },
-    scene: { preload, create, update }
-};
+function load(){
 
-new Phaser.Game(config);
+    const story = document.getElementById("story");
+    const content = document.getElementById("content");
+    const message = document.getElementById("message");
 
-function preload(){
-    this.load.image('ground','https://labs.phaser.io/assets/sprites/platform.png');
-    this.load.image('coin','https://labs.phaser.io/assets/sprites/gold_1.png');
-    this.load.image('hero','https://labs.phaser.io/assets/sprites/phaser-dude.png');
-}
+    content.innerHTML = "";
+    message.innerText = "";
 
-function create(){
+    // ===== FASE 1 =====
+    if(phase === 1){
 
-    speak("Vamos lá Gael! Pegue as moedas!");
+        story.innerText = "🏠 Missão 1: Casa segura";
 
-    const ground = this.physics.add.staticGroup();
-    ground.create(200,580,'ground').setScale(2).refreshBody();
-
-    player = this.physics.add.sprite(100,450,'hero');
-    player.setScale(1.5); // maior
-    player.setCollideWorldBounds(true);
-
-    this.physics.add.collider(player, ground);
-
-    coins = this.physics.add.group();
-
-    for(let i=0;i<6;i++){
-        let coin = coins.create(Phaser.Math.Between(50,350),0,'coin');
-        coin.setBounce(1);
+        question(
+            "Pode correr dentro de casa?",
+            ["SIM","NÃO"],
+            "NÃO",
+            "Muito bem! Heróis cuidam da segurança 💖"
+        );
     }
 
-    this.physics.add.collider(coins, ground);
-    this.physics.add.overlap(player, coins, collectCoin, null, this);
+    // ===== FASE 2 =====
+    else if(phase === 2){
 
-    text = this.add.text(10,10,"⭐ 0",{fontSize:"20px",fill:"#000"});
-    this.add.text(70,40,"Gael Herói 💖",{fontSize:"22px",fill:"#000"});
-}
+        story.innerText = "❤️ Missão 2: Amor e respeito";
 
-function update(){
-
-    if(moveDir === -1){
-        player.setVelocityX(-160);
+        question(
+            "Devemos respeitar a mamãe?",
+            ["SIM","NÃO"],
+            "SIM",
+            "Isso! O respeito faz você ser especial 💕"
+        );
     }
-    else if(moveDir === 1){
-        player.setVelocityX(160);
+
+    // ===== FASE 3 =====
+    else if(phase === 3){
+
+        story.innerText = "🧠 Missão 3: Inteligência";
+
+        question(
+            "Clique na letra G",
+            ["A","G","B"],
+            "G",
+            "Perfeito! Você é muito inteligente! 🔤"
+        );
     }
+
+    // ===== FASE 4 =====
+    else if(phase === 4){
+
+        story.innerText = "💪 Missão 4: Força do bem";
+
+        question(
+            "Ser forte é bater nos outros?",
+            ["SIM","NÃO"],
+            "NÃO",
+            "Isso! Ser forte é cuidar e proteger 💖"
+        );
+    }
+
+    // ===== FINAL =====
     else{
-        player.setVelocityX(0);
+
+        story.innerText = "🏆 Gael virou um Herói do Amor!";
+
+        content.innerHTML = `
+            <h2>Parabéns! 🎉</h2>
+            <p>Você aprendeu:</p>
+            <p>💖 Amor</p>
+            <p>❤️ Respeito</p>
+            <p>🧠 Inteligência</p>
+            <p>💪 Força do bem</p>
+            <button onclick="location.reload()">Jogar de novo</button>
+        `;
+
+        speak("Parabéns Gael! Você é um herói!");
     }
 }
 
-// parar movimento quando soltar botão
-document.addEventListener("touchend",()=> moveDir = 0);
-document.addEventListener("mouseup",()=> moveDir = 0);
+// FUNÇÃO DE PERGUNTA
+function question(text, options, correct, success){
 
-function collectCoin(player, coin){
-    coin.disableBody(true,true);
-    stars++;
-    text.setText("⭐ "+stars);
-    speak("Muito bem Gael!");
+    const content = document.getElementById("content");
+    const message = document.getElementById("message");
+
+    let q = document.createElement("h2");
+    q.innerText = text;
+
+    content.appendChild(q);
+
+    options.forEach(opt=>{
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+
+        btn.onclick = ()=>{
+
+            if(opt === correct){
+                message.innerText = success;
+                speak(success);
+                setTimeout(next,1200);
+            }else{
+                message.innerText = "Ops! Vamos tentar de novo 💛";
+                speak("Tente novamente");
+            }
+
+        };
+
+        content.appendChild(btn);
+    });
 }
+
+load();
 
 </script>
 
 </body>
-</html> 
+</html>

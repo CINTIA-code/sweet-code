@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Missão do Pequeno Herói</title>
+<title>Missão do Gael Herói</title>
 
 <style>
 body{
     margin:0;
-    font-family:Arial, sans-serif;
-    background:linear-gradient(135deg,#4facfe,#00f2fe);
+    font-family:Arial;
+    background:linear-gradient(135deg,#667eea,#764ba2);
     display:flex;
     justify-content:center;
     align-items:center;
@@ -23,27 +23,29 @@ body{
     padding:25px;
     border-radius:20px;
     text-align:center;
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
-#stars{
-    font-size:20px;
-    margin-bottom:10px;
+#top{
+    display:flex;
+    justify-content:space-between;
+    font-size:18px;
 }
 
 #gael{
-    width:130px;
+    width:140px;
     margin:15px 0;
     transition:0.3s;
 }
 
-.run{
-    animation: runAnim 0.3s infinite alternate;
+.jump{
+    animation: jump 0.4s;
 }
 
-@keyframes runAnim{
-    from{ transform: translateX(-5px); }
-    to{ transform: translateX(5px); }
+@keyframes jump{
+    0%{ transform: translateY(0); }
+    50%{ transform: translateY(-20px); }
+    100%{ transform: translateY(0); }
 }
 
 button{
@@ -52,13 +54,21 @@ button{
     font-size:16px;
     border:none;
     border-radius:10px;
-    background:#1976d2;
+    background:#ff7a18;
     color:white;
     cursor:pointer;
 }
 
 button:hover{
-    background:#125ea8;
+    background:#e65100;
+}
+
+.correct{
+    background:green !important;
+}
+
+.wrong{
+    background:red !important;
 }
 </style>
 </head>
@@ -66,117 +76,147 @@ button:hover{
 <body>
 
 <div id="game">
-    <div id="stars">⭐ 0</div>
-    <h2 id="title">Missão 1</h2>
+    <div id="top">
+        <div id="stars">⭐ 0</div>
+        <div id="life">❤️ 3</div>
+    </div>
+
+    <h2 id="title">Missão do Gael</h2>
+
     <img id="gael" src="gael.png">
+
     <div id="content"></div>
 </div>
 
-<audio id="clap" src="https://www.myinstants.com/media/sounds/kids-cheering.mp3"></audio>
+<audio id="win" src="https://www.myinstants.com/media/sounds/tada-fanfare.mp3"></audio>
+<audio id="error" src="https://www.myinstants.com/media/sounds/error.mp3"></audio>
 
 <script>
 
 const game = {
     phase: 1,
     stars: 0,
+    life: 3,
 
-    updateStars(){
+    updateUI(){
         document.getElementById("stars").innerText = "⭐ " + this.stars;
+        document.getElementById("life").innerText = "❤️ " + this.life;
+    },
+
+    correct(btn){
+        btn.classList.add("correct");
+        document.getElementById("win").play();
+        this.stars++;
+        document.getElementById("gael").classList.add("jump");
+
+        setTimeout(()=>{
+            document.getElementById("gael").classList.remove("jump");
+            this.next();
+        },800);
+    },
+
+    wrong(btn){
+        btn.classList.add("wrong");
+        document.getElementById("error").play();
+        this.life--;
+
+        this.updateUI();
+
+        if(this.life <= 0){
+            this.gameOver();
+        }
     },
 
     next(){
         this.phase++;
+        this.updateUI();
         this.load();
+    },
+
+    gameOver(){
+        document.getElementById("title").innerText = "😢 Game Over";
+        document.getElementById("content").innerHTML =
+        `<h3>O Gael precisa de você!</h3>
+         <button onclick="location.reload()">Tentar de novo</button>`;
     },
 
     load(){
         const title = document.getElementById("title");
         const content = document.getElementById("content");
-        const gael = document.getElementById("gael");
 
         content.innerHTML = "";
 
         if(this.phase === 1){
-            title.innerText = "Missão 1 – Segurança";
-            gael.classList.add("run");
+            title.innerText = "Missão 1 🚫";
 
-            setTimeout(() => {
-                gael.classList.remove("run");
-                title.innerText = "⚠️ Devemos correr dentro de casa?";
+            let q = document.createElement("p");
+            q.innerText = "Pode correr dentro de casa?";
 
-                let sim = document.createElement("button");
-                sim.innerText = "SIM";
-
-                let nao = document.createElement("button");
-                nao.innerText = "NÃO";
-
-                nao.onclick = () => {
-                    this.stars++;
-                    this.updateStars();
-                    document.getElementById("clap").play();
-                    this.next();
-                };
-
-                content.appendChild(sim);
-                content.appendChild(nao);
-
-            },2000);
-        }
-
-        else if(this.phase === 2){
-            title.innerText = "Missão 2 – Conhecimento";
-
-            let question = document.createElement("p");
-            question.innerText = "Clique na letra G";
-
-            let letters = ["A","G","B","C"];
-
-            letters.forEach(letter=>{
+            ["SIM","NÃO"].forEach(text=>{
                 let btn = document.createElement("button");
-                btn.innerText = letter;
+                btn.innerText = text;
 
-                btn.onclick = () =>{
-                    if(letter === "G"){
-                        this.stars++;
-                        this.updateStars();
-                        document.getElementById("clap").play();
-                        this.next();
-                    }
+                btn.onclick = ()=>{
+                    text === "NÃO" ? this.correct(btn) : this.wrong(btn);
                 }
 
                 content.appendChild(btn);
             });
 
-            content.prepend(question);
+            content.prepend(q);
+        }
+
+        else if(this.phase === 2){
+            title.innerText = "Missão 2 🔤";
+
+            let q = document.createElement("p");
+            q.innerText = "Onde está a letra G?";
+
+            ["A","G","C","B"].forEach(letter=>{
+                let btn = document.createElement("button");
+                btn.innerText = letter;
+
+                btn.onclick = ()=>{
+                    letter === "G" ? this.correct(btn) : this.wrong(btn);
+                }
+
+                content.appendChild(btn);
+            });
+
+            content.prepend(q);
         }
 
         else if(this.phase === 3){
-            title.innerText = "Missão 3 – Respeito";
+            title.innerText = "Missão 3 ❤️";
 
-            let question = document.createElement("p");
-            question.innerText = "Devemos respeitar a mamãe?";
+            let q = document.createElement("p");
+            q.innerText = "Devemos respeitar a mamãe?";
 
-            let sim = document.createElement("button");
-            sim.innerText = "SIM";
+            ["SIM","NÃO"].forEach(text=>{
+                let btn = document.createElement("button");
+                btn.innerText = text;
 
-            sim.onclick = () => {
-                this.stars++;
-                this.updateStars();
-                document.getElementById("clap").play();
-                this.next();
-            }
+                btn.onclick = ()=>{
+                    text === "SIM" ? this.correct(btn) : this.wrong(btn);
+                }
 
-            content.appendChild(question);
-            content.appendChild(sim);
+                content.appendChild(btn);
+            });
+
+            content.prepend(q);
         }
 
         else{
-            title.innerText = "🏆 Missão Concluída!";
-            content.innerHTML = "<h3>Você ganhou "+this.stars+" estrelas!</h3>";
+            title.innerText = "🏆 VITÓRIA!";
+            content.innerHTML =
+            `<h2>Gael salvou o dia! 🎉</h2>
+             <p>Você fez ${this.stars} estrelas!</p>
+             <button onclick="location.reload()">Jogar novamente</button>`;
         }
     }
 };
 
+game.updateUI();
 game.load();
 
 </script>

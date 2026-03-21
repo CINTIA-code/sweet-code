@@ -4,60 +4,68 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Gael - Pequeno Herói</title>
+<title>Gael - Herói do Amor</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial;
-    background:linear-gradient(135deg,#ff9a9e,#fad0c4);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
+    background:linear-gradient(#4facfe,#00f2fe);
+    overflow:hidden;
 }
 
 #game{
-    width:95%;
-    max-width:520px;
+    width:100%;
+    max-width:500px;
+    height:100vh;
+    margin:auto;
     background:white;
-    padding:20px;
-    border-radius:20px;
+    position:relative;
+    overflow:hidden;
+}
+
+#hud{
+    display:flex;
+    justify-content:space-between;
+    padding:10px;
+    font-size:18px;
+}
+
+#hero{
+    width:90px;
+    position:absolute;
+    bottom:20px;
+    left:20px;
+    transition:0.2s;
+}
+
+.jump{
+    transform:translateY(-40px);
+}
+
+.coin{
+    width:40px;
+    position:absolute;
+    bottom:40px;
+}
+
+#storyBox{
+    position:absolute;
+    bottom:0;
+    width:100%;
+    background:white;
+    padding:15px;
     text-align:center;
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
-}
-
-#gael{
-    width:130px;
-    margin:10px;
-}
-
-#message{
-    font-size:14px;
-    margin-top:10px;
-    color:#555;
+    border-top:2px solid #ddd;
 }
 
 button{
-    padding:12px;
-    margin:6px;
+    padding:10px;
+    margin:5px;
     border:none;
     border-radius:10px;
-    background:#ff6f61;
+    background:#ff9800;
     color:white;
-    font-size:16px;
-}
-
-button:hover{
-    background:#e64a45;
-}
-
-.correct{
-    background:green !important;
-}
-
-.wrong{
-    background:red !important;
 }
 </style>
 </head>
@@ -66,109 +74,96 @@ button:hover{
 
 <div id="game">
 
-<h2 id="title">🌟 Gael - Pequeno Herói</h2>
+<div id="hud">
+    <div id="stars">⭐ 0</div>
+</div>
 
-<img id="gael" src="gael.png">
+<img id="hero" src="https://cdn-icons-png.flaticon.com/512/1998/1998610.png">
 
-<p id="story"></p>
-
-<div id="content"></div>
-
-<p id="message"></p>
+<div id="storyBox">
+    <p id="story">Gael é um pequeno herói! Vamos começar a aventura 💖</p>
+    <div id="actions"></div>
+</div>
 
 </div>
 
 <script>
 
+let stars = 0;
 let phase = 1;
 
-function setMessage(text){
-    document.getElementById("message").innerText = text;
+const story = document.getElementById("story");
+const actions = document.getElementById("actions");
+const hero = document.getElementById("hero");
+
+function speak(text){
+    let msg = new SpeechSynthesisUtterance(text);
+    msg.lang = "pt-BR";
+    speechSynthesis.speak(msg);
 }
 
-function next(){
-    phase++;
-    load();
+function updateStars(){
+    document.getElementById("stars").innerText = "⭐ " + stars;
 }
 
-function load(){
-    const story = document.getElementById("story");
-    const content = document.getElementById("content");
-
-    content.innerHTML = "";
-
-    // ===== FASE 1 =====
-    if(phase === 1){
-        story.innerText = "Gael quer ser um herói! Vamos ajudar ele a tomar boas decisões 💖";
-
-        createQuestion(
-            "Correr dentro de casa é seguro?",
-            ["SIM","NÃO"],
-            "NÃO",
-            "Muito bem! Heróis cuidam da segurança 🏠✨"
-        );
-    }
-
-    // ===== FASE 2 =====
-    else if(phase === 2){
-        story.innerText = "Ser um herói também é tratar as pessoas com carinho ❤️";
-
-        createQuestion(
-            "Devemos respeitar a mamãe?",
-            ["SIM","NÃO"],
-            "SIM",
-            "Isso! O respeito faz a gente ser especial 💕"
-        );
-    }
-
-    // ===== FASE 3 =====
-    else if(phase === 3){
-        story.innerText = "Heróis também são inteligentes 🧠";
-
-        createQuestion(
-            "Clique na letra G",
-            ["A","G","B"],
-            "G",
-            "Perfeito! Você está aprendendo muito! 🔤"
-        );
-    }
-
-    // ===== FASE 4 =====
-    else if(phase === 4){
-        story.innerText = "Ser forte não é brigar, é ser corajoso e gentil 💪";
-
-        createQuestion(
-            "Ser forte é bater nos outros?",
-            ["SIM","NÃO"],
-            "NÃO",
-            "Isso! Ser forte é cuidar e proteger 💖"
-        );
-    }
-
-    // ===== FINAL =====
-    else{
-        story.innerText = "🏆 Gael virou um verdadeiro herói!";
-
-        content.innerHTML = `
-            <h3>Você aprendeu:</h3>
-            <p>💖 Amor</p>
-            <p>❤️ Respeito</p>
-            <p>🧠 Inteligência</p>
-            <p>💪 Força do bem</p>
-            <button onclick="location.reload()">Jogar novamente</button>
-        `;
-
-        setMessage("Você é incrível! ✨");
-    }
+// ===== ANIMAÇÃO PULO =====
+function jump(){
+    hero.classList.add("jump");
+    setTimeout(()=> hero.classList.remove("jump"),300);
 }
 
-function createQuestion(text, options, correct, successMsg){
-    const content = document.getElementById("content");
+// ===== FASE AVENTURA =====
+function runPhase(){
 
-    let q = document.createElement("p");
-    q.innerText = text;
+    story.innerText = "🏃 Pegue as moedas Gael!";
+    speak("Vamos correr Gael!");
 
-    content.appendChild(q);
+    actions.innerHTML = "";
+
+    let count = 0;
+
+    let interval = setInterval(()=>{
+
+        let coin = document.createElement("img");
+        coin.src = "https://cdn-icons-png.flaticon.com/512/138/138292.png";
+        coin.className = "coin";
+        coin.style.left = "100%";
+
+        game.appendChild(coin);
+
+        let pos = 100;
+
+        let move = setInterval(()=>{
+            pos -= 3;
+            coin.style.left = pos + "%";
+
+            if(pos < 15){
+                stars++;
+                updateStars();
+                jump();
+                coin.remove();
+                clearInterval(move);
+            }
+
+        },30);
+
+        count++;
+
+        if(count > 8){
+            clearInterval(interval);
+            setTimeout(next,1500);
+        }
+
+    },700);
+}
+
+// ===== QUIZ =====
+function question(text, options, correct, success){
+
+    story.innerText = text;
+    speak(text);
+
+    actions.innerHTML = "";
 
     options.forEach(opt=>{
         let btn = document.createElement("button");
@@ -176,20 +171,70 @@ function createQuestion(text, options, correct, successMsg){
 
         btn.onclick = ()=>{
             if(opt === correct){
-                btn.classList.add("correct");
-                setMessage(successMsg);
-                setTimeout(next,1000);
+                stars++;
+                updateStars();
+                speak(success);
+                next();
             }else{
-                btn.classList.add("wrong");
-                setMessage("Ops! Vamos tentar de novo 💛");
+                speak("Vamos tentar de novo");
             }
         };
 
-        content.appendChild(btn);
+        actions.appendChild(btn);
     });
 }
 
-load();
+// ===== CONTROLE =====
+function next(){
+    phase++;
+
+    if(phase === 2){
+        question(
+            "Pode correr dentro de casa?",
+            ["SIM","NÃO"],
+            "NÃO",
+            "Muito bem Gael!"
+        );
+    }
+
+    else if(phase === 3){
+        question(
+            "Devemos respeitar a mamãe?",
+            ["SIM","NÃO"],
+            "SIM",
+            "Você é um herói do amor!"
+        );
+    }
+
+    else if(phase === 4){
+        question(
+            "Clique na letra G",
+            ["A","G","B"],
+            "G",
+            "Perfeito!"
+        );
+    }
+
+    else if(phase === 5){
+        question(
+            "Ser forte é bater?",
+            ["SIM","NÃO"],
+            "NÃO",
+            "Ser forte é cuidar!"
+        );
+    }
+
+    else{
+        story.innerText = "🏆 Gael virou um HERÓI!";
+        speak("Parabéns Gael, você é incrível!");
+
+        actions.innerHTML = "<button onclick='location.reload()'>Jogar de novo</button>";
+    }
+}
+
+// iniciar
+runPhase();
+updateStars();
 
 </script>
 

@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Missão do Gael Herói</title>
+
+<title>Gael - Pequeno Herói</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial;
-    background:linear-gradient(135deg,#667eea,#764ba2);
+    background:linear-gradient(135deg,#ff9a9e,#fad0c4);
     display:flex;
     justify-content:center;
     align-items:center;
@@ -17,50 +18,38 @@ body{
 }
 
 #game{
-    background:white;
     width:95%;
     max-width:520px;
-    padding:25px;
+    background:white;
+    padding:20px;
     border-radius:20px;
     text-align:center;
-    box-shadow:0 10px 30px rgba(0,0,0,0.3);
-}
-
-#top{
-    display:flex;
-    justify-content:space-between;
-    font-size:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
 #gael{
-    width:140px;
-    margin:15px 0;
-    transition:0.3s;
+    width:130px;
+    margin:10px;
 }
 
-.jump{
-    animation: jump 0.4s;
-}
-
-@keyframes jump{
-    0%{ transform: translateY(0); }
-    50%{ transform: translateY(-20px); }
-    100%{ transform: translateY(0); }
+#message{
+    font-size:14px;
+    margin-top:10px;
+    color:#555;
 }
 
 button{
-    padding:12px 18px;
+    padding:12px;
     margin:6px;
-    font-size:16px;
     border:none;
     border-radius:10px;
-    background:#ff7a18;
+    background:#ff6f61;
     color:white;
-    cursor:pointer;
+    font-size:16px;
 }
 
 button:hover{
-    background:#e65100;
+    background:#e64a45;
 }
 
 .correct{
@@ -76,148 +65,131 @@ button:hover{
 <body>
 
 <div id="game">
-    <div id="top">
-        <div id="stars">⭐ 0</div>
-        <div id="life">❤️ 3</div>
-    </div>
 
-    <h2 id="title">Missão do Gael</h2>
+<h2 id="title">🌟 Gael - Pequeno Herói</h2>
 
-    <img id="gael" src="gael.png">
+<img id="gael" src="gael.png">
 
-    <div id="content"></div>
+<p id="story"></p>
+
+<div id="content"></div>
+
+<p id="message"></p>
+
 </div>
-
-<audio id="win" src="https://www.myinstants.com/media/sounds/tada-fanfare.mp3"></audio>
-<audio id="error" src="https://www.myinstants.com/media/sounds/error.mp3"></audio>
 
 <script>
 
-const game = {
-    phase: 1,
-    stars: 0,
-    life: 3,
+let phase = 1;
 
-    updateUI(){
-        document.getElementById("stars").innerText = "⭐ " + this.stars;
-        document.getElementById("life").innerText = "❤️ " + this.life;
-    },
+function setMessage(text){
+    document.getElementById("message").innerText = text;
+}
 
-    correct(btn){
-        btn.classList.add("correct");
-        document.getElementById("win").play();
-        this.stars++;
-        document.getElementById("gael").classList.add("jump");
+function next(){
+    phase++;
+    load();
+}
 
-        setTimeout(()=>{
-            document.getElementById("gael").classList.remove("jump");
-            this.next();
-        },800);
-    },
+function load(){
+    const story = document.getElementById("story");
+    const content = document.getElementById("content");
 
-    wrong(btn){
-        btn.classList.add("wrong");
-        document.getElementById("error").play();
-        this.life--;
+    content.innerHTML = "";
 
-        this.updateUI();
+    // ===== FASE 1 =====
+    if(phase === 1){
+        story.innerText = "Gael quer ser um herói! Vamos ajudar ele a tomar boas decisões 💖";
 
-        if(this.life <= 0){
-            this.gameOver();
-        }
-    },
-
-    next(){
-        this.phase++;
-        this.updateUI();
-        this.load();
-    },
-
-    gameOver(){
-        document.getElementById("title").innerText = "😢 Game Over";
-        document.getElementById("content").innerHTML =
-        `<h3>O Gael precisa de você!</h3>
-         <button onclick="location.reload()">Tentar de novo</button>`;
-    },
-
-    load(){
-        const title = document.getElementById("title");
-        const content = document.getElementById("content");
-
-        content.innerHTML = "";
-
-        if(this.phase === 1){
-            title.innerText = "Missão 1 🚫";
-
-            let q = document.createElement("p");
-            q.innerText = "Pode correr dentro de casa?";
-
-            ["SIM","NÃO"].forEach(text=>{
-                let btn = document.createElement("button");
-                btn.innerText = text;
-
-                btn.onclick = ()=>{
-                    text === "NÃO" ? this.correct(btn) : this.wrong(btn);
-                }
-
-                content.appendChild(btn);
-            });
-
-            content.prepend(q);
-        }
-
-        else if(this.phase === 2){
-            title.innerText = "Missão 2 🔤";
-
-            let q = document.createElement("p");
-            q.innerText = "Onde está a letra G?";
-
-            ["A","G","C","B"].forEach(letter=>{
-                let btn = document.createElement("button");
-                btn.innerText = letter;
-
-                btn.onclick = ()=>{
-                    letter === "G" ? this.correct(btn) : this.wrong(btn);
-                }
-
-                content.appendChild(btn);
-            });
-
-            content.prepend(q);
-        }
-
-        else if(this.phase === 3){
-            title.innerText = "Missão 3 ❤️";
-
-            let q = document.createElement("p");
-            q.innerText = "Devemos respeitar a mamãe?";
-
-            ["SIM","NÃO"].forEach(text=>{
-                let btn = document.createElement("button");
-                btn.innerText = text;
-
-                btn.onclick = ()=>{
-                    text === "SIM" ? this.correct(btn) : this.wrong(btn);
-                }
-
-                content.appendChild(btn);
-            });
-
-            content.prepend(q);
-        }
-
-        else{
-            title.innerText = "🏆 VITÓRIA!";
-            content.innerHTML =
-            `<h2>Gael salvou o dia! 🎉</h2>
-             <p>Você fez ${this.stars} estrelas!</p>
-             <button onclick="location.reload()">Jogar novamente</button>`;
-        }
+        createQuestion(
+            "Correr dentro de casa é seguro?",
+            ["SIM","NÃO"],
+            "NÃO",
+            "Muito bem! Heróis cuidam da segurança 🏠✨"
+        );
     }
-};
 
-game.updateUI();
-game.load();
+    // ===== FASE 2 =====
+    else if(phase === 2){
+        story.innerText = "Ser um herói também é tratar as pessoas com carinho ❤️";
+
+        createQuestion(
+            "Devemos respeitar a mamãe?",
+            ["SIM","NÃO"],
+            "SIM",
+            "Isso! O respeito faz a gente ser especial 💕"
+        );
+    }
+
+    // ===== FASE 3 =====
+    else if(phase === 3){
+        story.innerText = "Heróis também são inteligentes 🧠";
+
+        createQuestion(
+            "Clique na letra G",
+            ["A","G","B"],
+            "G",
+            "Perfeito! Você está aprendendo muito! 🔤"
+        );
+    }
+
+    // ===== FASE 4 =====
+    else if(phase === 4){
+        story.innerText = "Ser forte não é brigar, é ser corajoso e gentil 💪";
+
+        createQuestion(
+            "Ser forte é bater nos outros?",
+            ["SIM","NÃO"],
+            "NÃO",
+            "Isso! Ser forte é cuidar e proteger 💖"
+        );
+    }
+
+    // ===== FINAL =====
+    else{
+        story.innerText = "🏆 Gael virou um verdadeiro herói!";
+
+        content.innerHTML = `
+            <h3>Você aprendeu:</h3>
+            <p>💖 Amor</p>
+            <p>❤️ Respeito</p>
+            <p>🧠 Inteligência</p>
+            <p>💪 Força do bem</p>
+            <button onclick="location.reload()">Jogar novamente</button>
+        `;
+
+        setMessage("Você é incrível! ✨");
+    }
+}
+
+function createQuestion(text, options, correct, successMsg){
+    const content = document.getElementById("content");
+
+    let q = document.createElement("p");
+    q.innerText = text;
+
+    content.appendChild(q);
+
+    options.forEach(opt=>{
+        let btn = document.createElement("button");
+        btn.innerText = opt;
+
+        btn.onclick = ()=>{
+            if(opt === correct){
+                btn.classList.add("correct");
+                setMessage(successMsg);
+                setTimeout(next,1000);
+            }else{
+                btn.classList.add("wrong");
+                setMessage("Ops! Vamos tentar de novo 💛");
+            }
+        };
+
+        content.appendChild(btn);
+    });
+}
+
+load();
 
 </script>
 

@@ -2,13 +2,13 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Gael: Herói do Amor 💖</title>
+<title>Gael 💖</title>
 
 <style>
 body{
     margin:0;
     font-family:Arial;
-    background:linear-gradient(#a1c4fd,#c2e9fb);
+    background:linear-gradient(#ffecd2,#fcb69f);
     display:flex;
     justify-content:center;
     align-items:center;
@@ -24,28 +24,24 @@ body{
     text-align:center;
 }
 
-h1{
-    font-size:22px;
+img{
+    width:120px;
+    margin:10px;
 }
 
 button{
-    padding:15px;
-    margin:8px;
-    font-size:18px;
+    padding:12px;
+    margin:5px;
     border:none;
-    border-radius:12px;
-    background:#ff9800;
+    border-radius:10px;
+    background:#ff7a18;
     color:white;
-    width:100%;
-}
-
-button:hover{
-    background:#e65100;
+    font-size:16px;
 }
 
 #message{
     margin-top:10px;
-    font-size:14px;
+    font-size:15px;
     color:#555;
 }
 </style>
@@ -55,145 +51,78 @@ button:hover{
 
 <div id="game">
 
-<h1 id="title">🌟 Gael: Herói do Amor</h1>
+<h2>💖 Brincando com o Gael</h2>
 
-<p id="story">Gael é um pequeno herói! Vamos ajudar ele a aprender coisas boas 💖</p>
+<img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png">
 
-<div id="content"></div>
+<p id="text">O que você quer fazer agora?</p>
+
+<div id="actions"></div>
 
 <p id="message"></p>
 
 </div>
 
+<audio id="music" src="https://www.myinstants.com/media/sounds/kids-song.mp3"></audio>
+
 <script>
 
-let phase = 1;
-
-// VOZ
 function speak(text){
     let msg = new SpeechSynthesisUtterance(text);
     msg.lang = "pt-BR";
     speechSynthesis.speak(msg);
 }
 
-function next(){
-    phase++;
-    load();
-}
+const actions = document.getElementById("actions");
+const message = document.getElementById("message");
 
-function load(){
-
-    const story = document.getElementById("story");
-    const content = document.getElementById("content");
-    const message = document.getElementById("message");
-
-    content.innerHTML = "";
-    message.innerText = "";
-
-    // ===== FASE 1 =====
-    if(phase === 1){
-
-        story.innerText = "🏠 Missão 1: Casa segura";
-
-        question(
-            "Pode correr dentro de casa?",
-            ["SIM","NÃO"],
-            "NÃO",
-            "Muito bem! Heróis cuidam da segurança 💖"
-        );
+// AÇÕES (SEM CERTO OU ERRADO)
+const options = [
+    {
+        text: "🤗 Abraçar",
+        action: () => {
+            message.innerText = "Que gostoso um abraço! 💖";
+            speak("Abraçar é muito bom!");
+        }
+    },
+    {
+        text: "👋 Dar a mão",
+        action: () => {
+            message.innerText = "Segurar a mão mostra carinho 🤝";
+            speak("Muito bonito dar a mão!");
+        }
+    },
+    {
+        text: "🗣️ Falar amigo",
+        action: () => {
+            message.innerText = "Ser amigo é muito especial 💛";
+            speak("Você é um bom amigo!");
+        }
+    },
+    {
+        text: "💖 Fazer carinho",
+        action: () => {
+            message.innerText = "Carinho deixa o coração feliz 🥰";
+            speak("Carinho é amor!");
+        }
+    },
+    {
+        text: "🎵 Cantar",
+        action: () => {
+            message.innerText = "🎶 Vamos cantar juntos!";
+            speak("Vamos cantar Gael!");
+            document.getElementById("music").play();
+        }
     }
+];
 
-    // ===== FASE 2 =====
-    else if(phase === 2){
-
-        story.innerText = "❤️ Missão 2: Amor e respeito";
-
-        question(
-            "Devemos respeitar a mamãe?",
-            ["SIM","NÃO"],
-            "SIM",
-            "Isso! O respeito faz você ser especial 💕"
-        );
-    }
-
-    // ===== FASE 3 =====
-    else if(phase === 3){
-
-        story.innerText = "🧠 Missão 3: Inteligência";
-
-        question(
-            "Clique na letra G",
-            ["A","G","B"],
-            "G",
-            "Perfeito! Você é muito inteligente! 🔤"
-        );
-    }
-
-    // ===== FASE 4 =====
-    else if(phase === 4){
-
-        story.innerText = "💪 Missão 4: Força do bem";
-
-        question(
-            "Ser forte é bater nos outros?",
-            ["SIM","NÃO"],
-            "NÃO",
-            "Isso! Ser forte é cuidar e proteger 💖"
-        );
-    }
-
-    // ===== FINAL =====
-    else{
-
-        story.innerText = "🏆 Gael virou um Herói do Amor!";
-
-        content.innerHTML = `
-            <h2>Parabéns! 🎉</h2>
-            <p>Você aprendeu:</p>
-            <p>💖 Amor</p>
-            <p>❤️ Respeito</p>
-            <p>🧠 Inteligência</p>
-            <p>💪 Força do bem</p>
-            <button onclick="location.reload()">Jogar de novo</button>
-        `;
-
-        speak("Parabéns Gael! Você é um herói!");
-    }
-}
-
-// FUNÇÃO DE PERGUNTA
-function question(text, options, correct, success){
-
-    const content = document.getElementById("content");
-    const message = document.getElementById("message");
-
-    let q = document.createElement("h2");
-    q.innerText = text;
-
-    content.appendChild(q);
-
-    options.forEach(opt=>{
-        let btn = document.createElement("button");
-        btn.innerText = opt;
-
-        btn.onclick = ()=>{
-
-            if(opt === correct){
-                message.innerText = success;
-                speak(success);
-                setTimeout(next,1200);
-            }else{
-                message.innerText = "Ops! Vamos tentar de novo 💛";
-                speak("Tente novamente");
-            }
-
-        };
-
-        content.appendChild(btn);
-    });
-}
-
-load();
+// CRIAR BOTÕES
+options.forEach(opt=>{
+    let btn = document.createElement("button");
+    btn.innerText = opt.text;
+    btn.onclick = opt.action;
+    actions.appendChild(btn);
+});
 
 </script>
 
